@@ -7,7 +7,7 @@ import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/fireb
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: API_KEY,
+    apiKey: "AIzaSyDxqNWEoaGWgoi8hgh8XupzG3Be9crsC9A",
     authDomain: "pwa-app-247d6.firebaseapp.com",
     projectId: "pwa-app-247d6",
     storageBucket: "pwa-app-247d6.firebasestorage.app",
