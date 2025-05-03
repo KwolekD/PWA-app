@@ -38,3 +38,110 @@ main {
         transform: translateY(0);
     }
 }
+
+/* ----- Główny styl navbara ----- */
+nav {
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+nav .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ----- Logo ----- */
+nav .logo img {
+    height: 40px;
+    transition: transform 0.3s ease;
+}
+
+nav .logo img:hover {
+    transform: scale(1.05);
+}
+
+/* ----- Linki nawigacyjne ----- */
+nav .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav .nav-links a {
+    color: #333333;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+nav .nav-links a:hover {
+    color: #4a6cf7;
+}
+
+/* ---- Animacja podkreślenia ----- */
+nav .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #4a6cf7;
+    transition: width 0.3s ease;
+}
+
+nav .nav-links a:hover::after {
+    width: 100%;
+}
+
+/* --- Hamburger widoczny TYLKO na mobile --- */
+.menu-toggle {
+    display: none;
+    /* Ukryj checkbox */
+}
+
+.hamburger {
+    display: none;
+    /* Domyślnie ukryty */
+    font-size: 2rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* --- Menu mobilne --- */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+        /* Pokaż na mobile */
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: white;
+        flex-direction: column;
+        align-items: center;
+        transition: left 0.3s ease;
+    }
+
+    /* Gdy checkbox jest zaznaczony, pokaż menu */
+    .menu-toggle:checked~.nav-links {
+        left: 0;
+    }
+}
