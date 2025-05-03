@@ -25,48 +25,29 @@ const messaging = getMessaging(app);
 async function requestNotificationPermission() {
     const permission = await Notification.requestPermission();
 
-    if (permission === "granted") {
-        console.log("Notification permission granted.");
+    if (permission !== "granted") return;
 
-        try {
-            // Explicitly get the service worker registration for sw.js
-            // Make sure the path here matches how you registered it in main.js
-            const registration = await navigator.serviceWorker.getRegistration('./sw.js');
-            console.log("Service Worker Registration:", registration);
-            if (registration) {
-                // Pass the serviceWorkerRegistration option to getToken
-                const currentToken = await getToken(messaging, {
-                    vapidKey: "BNNLHbEMjcfRP8yytSWjYTCHkI4NVixdA9hBUNVXtDzbtUFPyNfFJiwUovIIBAT60JFm3isWooIlzqm-Adllgko",
-                    serviceWorkerRegistration: registration // <-- Pass the registration object here
-                });
+    const registration = await window.serviceWorkerReady;
 
-                if (currentToken) {
-                    console.log("FCM Token:", currentToken);
-                    // TODO: Send the token to your server
-                } else {
-                    console.log("No registration token available. Request permission to generate one.");
-                }
-            } else {
-                console.error("Service worker registration not found for path './sw.js'");
-                console.log("No registration token available without service worker.");
-            }
+    if (!registration) {
+        console.error("Service Worker nie zarejestrowany");
+        return;
+    }
 
-
-        } catch (err) {
-            console.error("An error occurred while retrieving token or getting service worker registration.", err);
-        }
-
-    } else {
-        console.log("Notification permission not granted.");
+    try {
+        const messaging = getMessaging();
+        const token = await getToken(messaging, {
+            vapidKey: "BNNLHbEMj...",
+            serviceWorkerRegistration: registration
+        });
+        console.log("FCM Token:", token);
+    } catch (err) {
+        console.error("Błąd FCM:", err);
     }
 }
 
-// Call the async function to start the process
-requestNotificationPermission();
-
-
-// Handle messages, when the page is active (still needed)
-onMessage(messaging, (payload) => {
-    console.log("Wiadomość odebrana:", payload);
-    alert("Nowa wiadomość: " + payload.notification.title);
+// Inicjalizacja Firebase PO rejestracji SW
+window.serviceWorkerReady.then(() => {
+    const app = initializeApp(firebaseConfig);
+    window.messaging = getMessaging(app);
 });

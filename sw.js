@@ -4,8 +4,8 @@ const filesToCache = [
     './index.html',
     './style.css',
     './js/main.js',
-    './views/about.html',
-    './views/gallery.html',
+    './about.html',
+    './gallery.html',
 ];
 self.addEventListener('install', (event) => {
     event.waitUntil(

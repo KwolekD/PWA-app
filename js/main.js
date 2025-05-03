@@ -1,20 +1,18 @@
-window.onload = () => {
-    'use strict';
+window.serviceWorkerReady = new Promise((resolve) => {
     if ('serviceWorker' in navigator) {
-        // Return the promise from register
-        window.serviceWorkerRegistrationPromise = navigator.serviceWorker.register('./sw.js')
-            .then((registration) => {
-                console.log('Service Worker registered successfully.');
-                return registration; // Return the registration object
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then(registration => {
+                console.log('SW zarejestrowany:', registration);
+                resolve(registration);
             })
-            .catch((error) => {
-                console.error('Service Worker registration failed:', error);
-                throw error; // Propagate the error
+            .catch(err => {
+                console.error('Błąd rejestracji SW:', err);
+                resolve(null); // Nie przerywaj łańcucha
             });
     } else {
-        window.serviceWorkerRegistrationPromise = Promise.reject(new Error('Service Workers not supported'));
+        resolve(null);
     }
-};
+});
 
 
 
