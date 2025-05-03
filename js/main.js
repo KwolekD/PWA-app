@@ -2,7 +2,7 @@ window.onload = () => {
     'use strict';
     if ('serviceWorker' in navigator) {
         // Return the promise from register
-        window.serviceWorkerRegistrationPromise = navigator.serviceWorker.register('../sw.js')
+        window.serviceWorkerRegistrationPromise = navigator.serviceWorker.register('./sw.js')
             .then((registration) => {
                 console.log('Service Worker registered successfully.');
                 return registration; // Return the registration object

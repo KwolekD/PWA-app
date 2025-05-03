@@ -15,7 +15,7 @@ images.forEach((imgData, index) => {
     item.className = 'gallery-item';
 
     const img = document.createElement('img');
-    img.dataset.src = `../images/memes/${imgData.file}`;
+    img.dataset.src = `./images/memes/${imgData.file}`;
     img.alt = imgData.description;
     img.title = imgData.title;
 

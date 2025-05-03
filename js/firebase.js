@@ -31,7 +31,7 @@ async function requestNotificationPermission() {
         try {
             // Explicitly get the service worker registration for sw.js
             // Make sure the path here matches how you registered it in main.js
-            const registration = await navigator.serviceWorker.getRegistration('../sw.js');
+            const registration = await navigator.serviceWorker.getRegistration('./sw.js');
 
             if (registration) {
                 // Pass the serviceWorkerRegistration option to getToken
@@ -47,7 +47,7 @@ async function requestNotificationPermission() {
                     console.log("No registration token available. Request permission to generate one.");
                 }
             } else {
-                console.error("Service worker registration not found for path '../sw.js'");
+                console.error("Service worker registration not found for path './sw.js'");
                 console.log("No registration token available without service worker.");
             }
 

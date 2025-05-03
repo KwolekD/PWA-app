@@ -1,11 +1,11 @@
 const cacheName = 'PWA app';
 const filesToCache = [
-    '../',
-    '../index.html',
-    '../style.css',
-    '../js/main.js',
-    '../views/about.html',
-    '../views/gallery.html',
+    './',
+    './index.html',
+    './style.css',
+    './js/main.js',
+    './views/about.html',
+    './views/gallery.html',
 ];
 self.addEventListener('install', (event) => {
     event.waitUntil(
@@ -46,7 +46,7 @@ self.addEventListener('fetch', (event) => {
         }).catch(() => {
             // Fallback dla braku połączenia
             if (event.request.mode === 'navigate') {
-                return caches.match('../index.html');
+                return caches.match('./index.html');
             }
         })
     );
@@ -88,7 +88,7 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: "../images/favicon/favicon-96x96.png"
+        icon: "./images/favicon/favicon-96x96.png"
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
