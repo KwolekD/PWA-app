@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getMessaging, getToken, onMessage, useServiceWorker } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,41 +22,51 @@ const messaging = getMessaging(app);
 
 
 // Wait for the service worker to register and then tell messaging to use it
-if (window.serviceWorkerRegistrationPromise) {
-    window.serviceWorkerRegistrationPromise
-        .then((registration) => {
-            useServiceWorker(messaging, registration); // Tell messaging to use this service worker
-            console.log("FCM messaging instance linked to service worker.");
+async function requestNotificationPermission() {
+    const permission = await Notification.requestPermission();
 
-            // Now you can safely call getToken and setup onMessage
-            Notification.requestPermission().then((permission) => {
-                if (permission === "granted") {
-                    console.log("Notification permission granted.");
+    if (permission === "granted") {
+        console.log("Notification permission granted.");
 
-                    getToken(messaging, { vapidKey: "BNNLHbEMjcfRP8yytSWjYTCHkI4NVixdA9hBUNVXtDzbtUFPyNfFJiwUovIIBAT60JFm3isWooIlzqm-Adllgko" }).then((currentToken) => {
-                        if (currentToken) {
-                            console.log("FCM Token:", currentToken);
-                        } else {
-                            console.log("No registration token available. Request permission to generate one.");
-                        }
-                    }).catch((err) => {
-                        console.error("An error occurred while retrieving token.", err);
-                    });
+        try {
+            // Explicitly get the service worker registration for sw.js
+            // Make sure the path here matches how you registered it in main.js
+            const registration = await navigator.serviceWorker.getRegistration('../sw.js');
+
+            if (registration) {
+                // Pass the serviceWorkerRegistration option to getToken
+                const currentToken = await getToken(messaging, {
+                    vapidKey: "BNNLHbEMjcfRP8yytSWjYTCHkI4NVixdA9hBUNVXtDzbtUFPyNfFJiwUovIIBAT60JFm3isWooIlzqm-Adllgko",
+                    serviceWorkerRegistration: registration // <-- Pass the registration object here
+                });
+
+                if (currentToken) {
+                    console.log("FCM Token:", currentToken);
+                    // TODO: Send the token to your server
                 } else {
-                    console.log("Notification permission not granted.");
+                    console.log("No registration token available. Request permission to generate one.");
                 }
-            });
+            } else {
+                console.error("Service worker registration not found for path '../sw.js'");
+                console.log("No registration token available without service worker.");
+            }
 
-            // Handle messages when page is active
-            onMessage(messaging, (payload) => {
-                console.log("Wiadomość odebrana:", payload);
-                alert("Nowa wiadomość: " + payload.notification.title);
-            });
 
-        })
-        .catch((error) => {
-            console.error("Failed to link FCM messaging to service worker:", error);
-        });
-} else {
-    console.warn("Service worker registration promise not found. FCM may not function correctly.");
+        } catch (err) {
+            console.error("An error occurred while retrieving token or getting service worker registration.", err);
+        }
+
+    } else {
+        console.log("Notification permission not granted.");
+    }
 }
+
+// Call the async function to start the process
+requestNotificationPermission();
+
+
+// Handle messages, when the page is active (still needed)
+onMessage(messaging, (payload) => {
+    console.log("Wiadomość odebrana:", payload);
+    alert("Nowa wiadomość: " + payload.notification.title);
+});
