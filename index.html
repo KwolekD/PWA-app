@@ -58,12 +58,41 @@
         <main>
             <h1 class="title">Witam w mojej aplikacji z memami</h1>
             <p>Znalazałem folder na starym dysku HDD, a w nim wiele śmiesznych obrazków które pobrałem dawno temu.</p>
+
+            <!-- Dodaj przycisk do aktywacji powiadomień -->
+            <button id="enable-notifications" class="notification-btn">Włącz powiadomienia</button>
         </main>
     </div>
+
+    <!-- Najpierw rejestracja Service Workera -->
     <script src="./js/main.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js" type="module"></script>
+
+    <!-- Następnie skrypty Firebase (jako moduły) -->
     <script type="module" src="./js/firebase.js"></script>
+
+    <!-- Opcjonalny skrypt na dole strony do obsługi przycisku powiadomień -->
+    <script type="module">
+        import { requestNotificationPermission } from './js/firebase.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const notifyButton = document.getElementById('enable-notifications');
+            if (notifyButton) {
+                notifyButton.addEventListener('click', async () => {
+                    const token = await requestNotificationPermission();
+                    if (token) {
+                        notifyButton.textContent = 'Powiadomienia włączone';
+                        notifyButton.disabled = true;
+                        console.log('Token FCM uzyskany:', token);
+
+                        // Tutaj możesz wysłać token na swój serwer, aby zapisać go do bazy danych
+                        // i używać go do wysyłania powiadomień konkretnie do tego użytkownika
+                    } else {
+                        notifyButton.textContent = 'Błąd włączania powiadomień';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

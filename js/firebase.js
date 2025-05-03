@@ -1,11 +1,8 @@
-// Import the functions you need from the SDKs you need
+// firebase.js - poprawiona wersja
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Konfiguracja Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDxqNWEoaGWgoi8hgh8XupzG3Be9crsC9A",
     authDomain: "pwa-app-247d6.firebaseapp.com",
@@ -16,38 +13,89 @@ const firebaseConfig = {
     measurementId: "G-7MJ7Z4XX2X"
 };
 
-// Initialize Firebase
+// Inicjalizacja Firebase (tylko raz)
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
 
-// Wait for the service worker to register and then tell messaging to use it
-async function requestNotificationPermission() {
-    const permission = await Notification.requestPermission();
+const VAPID_KEY = "BNNLHbEMjcfRP8yytSWjYTCHkI4NVixdA9hBUNVXtDzbtUFPyNfFJiwUovIIBAT60JFm3isWooIlzqm-Adllgko";
 
-    if (permission !== "granted") return;
-
-    const registration = await window.serviceWorkerReady;
-
-    if (!registration) {
-        console.error("Service Worker nie zarejestrowany");
-        return;
-    }
-
+// Funkcja do żądania uprawnień powiadomień i rejestracji tokena FCM
+export async function requestNotificationPermission() {
     try {
-        const messaging = getMessaging();
-        const token = await getToken(messaging, {
-            vapidKey: "BNNLHbEMj...",
-            serviceWorkerRegistration: registration
-        });
-        console.log("FCM Token:", token);
-    } catch (err) {
-        console.error("Błąd FCM:", err);
+        console.log("Prośba o uprawnienia powiadomień...");
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+            console.log("Uprawnienia do powiadomień odrzucone");
+            return null;
+        }
+
+        console.log("Uprawnienia do powiadomień przyznane");
+
+        // Czekaj na rejestrację Service Workera
+        const swRegistration = await navigator.serviceWorker.ready;
+        console.log("Service Worker gotowy:", swRegistration);
+
+        // Pobierz token FCM
+        try {
+            const currentToken = await getToken(messaging, {
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: swRegistration
+            });
+
+            if (currentToken) {
+                console.log("Token FCM:", currentToken);
+                return currentToken;
+            } else {
+                console.log("Nie można uzyskać tokena");
+                return null;
+            }
+        } catch (fcmError) {
+            console.error("Błąd pobierania tokena FCM:", fcmError);
+            return null;
+        }
+    } catch (error) {
+        console.error("Błąd przy żądaniu uprawnień:", error);
+        return null;
     }
 }
 
-// Inicjalizacja Firebase PO rejestracji SW
-window.serviceWorkerReady.then(() => {
-    const app = initializeApp(firebaseConfig);
-    window.messaging = getMessaging(app);
+// Nasłuchiwanie wiadomości w foreground
+export function setupMessagingForeground() {
+    onMessage(messaging, (payload) => {
+        console.log("Otrzymano wiadomość w aplikacji:", payload);
+
+        // Wyświetl powiadomienie
+        if (payload.notification) {
+            const notificationTitle = payload.notification.title || "Nowe powiadomienie";
+            const notificationOptions = {
+                body: payload.notification.body || "",
+                icon: "./images/favicon/favicon-96x96.png"
+            };
+
+            // Wyświetl powiadomienie
+            new Notification(notificationTitle, notificationOptions);
+        }
+    });
+}
+
+// Inicjalizacja po załadowaniu strony
+document.addEventListener("DOMContentLoaded", async () => {
+    if ('serviceWorker' in navigator) {
+        try {
+            // Poczekaj na zarejestrowanie service workera
+            await window.serviceWorkerReady;
+
+            // Poproś o uprawnienia i zarejestruj token
+            await requestNotificationPermission();
+
+            // Ustaw obsługę wiadomości w foreground
+            setupMessagingForeground();
+        } catch (error) {
+            console.error("Błąd inicjalizacji Firebase Messaging:", error);
+        }
+    } else {
+        console.warn("Service Worker nie jest wspierany w tej przeglądarce");
+    }
 });

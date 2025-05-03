@@ -51,5 +51,6 @@
             "type": "image/png",
             "form_factor": "wide"
         }
-    ]
+    ],
+    "gcm_sender_id": "917743617946"
 }
