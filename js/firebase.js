@@ -31,7 +31,7 @@ async function requestNotificationPermission() {
         try {
             // Explicitly get the service worker registration for sw.js
             // Make sure the path here matches how you registered it in main.js
-            const registration = await navigator.serviceWorker.getRegistration('./sw.js');
+            const registration = await navigator.serviceWorker.getRegistration('./main.js');
 
             if (registration) {
                 // Pass the serviceWorkerRegistration option to getToken
