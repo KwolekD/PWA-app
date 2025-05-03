@@ -1,11 +1,11 @@
-const cacheName = 'piac-pwa-v1';
+const cacheName = 'PWA app';
 const filesToCache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/js/main.js',
-    '/views/about.html',
-    '/views/gallery.html',
+    './',
+    './index.html',
+    './style.css',
+    './js/main.js',
+    './views/about.html',
+    './views/gallery.html',
 ];
 self.addEventListener('install', (event) => {
     event.waitUntil(
