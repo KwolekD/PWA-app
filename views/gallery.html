@@ -36,12 +36,23 @@
     </nav>
     <div class="container">
         <main>
-            <h1>Gallery</h1>
-            <p>This is the gallery page.</p>
-            <a href="index.html">Back to Home</a>
+            <h1 class="title">Memy</h1>
+            <div id="gallery" class="gallery-grid"></div>
+
+            <div id="image-modal" class="modal">
+                <div class="modal-scroll-container">
+                    <div class="modal-content">
+                        <span id="modal-close" class="close">&times;</span>
+                        <div class="image-wrapper">
+                            <img id="modal-img" src="" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
     <script src="js/main.js"></script>
+    <script src="js/gallery.js"></script>
 </body>
 
 </html>
